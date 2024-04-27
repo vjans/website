@@ -21,7 +21,7 @@ export function createDemo(canvas) {
     const $ = q=>root.querySelector(q);
     const $$ = q=>root.querySelectorAll(q);
  	 */
-    const W=96, H=96;
+    const W=256, H=256;
     let demo;
     const modelDir = 'webgl_models8';
     let target = '🦎';
@@ -146,7 +146,7 @@ export function createDemo(canvas) {
     }
 
     async function updateModel() {
-      const r = await fetch('/testmodel.json');
+      const r = await fetch('/victor.json');
       const model = await r.json();
       if (!demo) {
         demo = createCA(gl, model, [W, H]);
@@ -165,6 +165,7 @@ export function createDemo(canvas) {
     let frameCount = 0;
   
     function render(time) {
+
       if  (!isInViewport(canvas)) {
         requestAnimationFrame(render);
         return;
