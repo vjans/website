@@ -15,7 +15,7 @@ const AboutCoverSection = () => {
           Hi, I'm Victor!
           </h2>
           <p className='font-medium capitalize mt-4 text-base'>
-          I'm an AI masters student at JKU Linz. I love generative art and emergent systems. Scroll down to find more about me, or read some of my blog posts. I like to write about my projects and stuff that fascinates me.
+          I'm an AI masters student at JKU Linz. I love generative art and dynamic systems. Scroll down to find more about me, or read some of my blog posts. I like to write about my projects and stuff that fascinates me.
           </p>
       </div>
     </section>
