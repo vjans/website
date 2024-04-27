@@ -13,7 +13,7 @@ function isInViewport(element) {
   return rect.top < h && rect.left < w && rect.bottom > 0 && rect.right > 0;
 }
 
-export function createDemo(canvas) {
+export function createDemo(canvas, modelName) {
     if (!canvas) return;
     /*
     const root = document.getElementById(divId);
@@ -146,7 +146,7 @@ export function createDemo(canvas) {
     }
 
     async function updateModel() {
-      const r = await fetch('/victor.json');
+      const r = await fetch(modelName);
       const model = await r.json();
       if (!demo) {
         demo = createCA(gl, model, [W, H]);
@@ -155,6 +155,8 @@ export function createDemo(canvas) {
       } else {
         demo.setWeights(model);
         demo.reset();
+
+        
       }
       updateUI();
     }
@@ -190,7 +192,15 @@ export function createDemo(canvas) {
         demo.getStepCount();
         //$("#stepCount").innerText = demo.getStepCount();
         //$("#ips").innerText = demo.fps();
-      }
+
+          // Chance to randomly paint a point
+        if (Math.random() < 0.01) { // 10% chance to paint a point
+            const x = Math.floor(Math.random() * W); // Random x-coordinate
+            const y = Math.floor(Math.random() * H); // Random y-coordinate
+            demo.paint(x, y, 1, 'seed');
+        }
+
+        }
       lastDrawTime = time;
 
       twgl.bindFramebufferInfo(gl);
@@ -201,13 +211,13 @@ export function createDemo(canvas) {
     }
 }
 
-const LottieAnimation = () => {
+const LottieAnimation = ({ modelName }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
         // When the component mounts, and the ref is attached to the canvas, initialize the demo
         if (canvasRef.current) {
-            createDemo(canvasRef.current);
+            createDemo(canvasRef.current, modelName);
         }
 
         // Cleanup function to handle component unmounting
@@ -217,10 +227,10 @@ const LottieAnimation = () => {
     }, []); // Ensure this runs once on mount
 
     return (
-        <div className="flex items-center justify-center w-full h-full"> 
-            <canvas ref={canvasRef}></canvas>
-        </div>
-    );
+    <div className="flex items-center justify-center w-full h-full"> 
+        <canvas ref={canvasRef} className="border-2 border-black dark:border-white"></canvas>
+    </div>
+);
 };
 
 export default LottieAnimation;
