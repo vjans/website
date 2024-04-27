@@ -28,8 +28,8 @@ export function createDemo(canvas, modelName, W, H) {
     let paused = false;
 
     const gl = canvas.getContext("webgl");
-    canvas.width = 576; // Adjusted from W*6 assuming W=96 as per your previous setting
-    canvas.height = 576; // Adjusted from H*6
+    canvas.width = 960; // Adjusted from W*6 assuming W=96 as per your previous setting
+    canvas.height = 960; // Adjusted from H*6
 
     function updateUI() {
     	/*
@@ -193,7 +193,7 @@ export function createDemo(canvas, modelName, W, H) {
         //$("#ips").innerText = demo.fps();
 
           // Chance to randomly paint a point
-        if (Math.random() < 0.01) { // 10% chance to paint a point
+        if (Math.random()*Math.random() > 0.9 && modelName=='/victor.json') { // 10% chance to paint a point
             const x = Math.floor(Math.random() * W); // Random x-coordinate
             const y = Math.floor(Math.random() * H); // Random y-coordinate
             demo.paint(x, y, 1, 'seed');

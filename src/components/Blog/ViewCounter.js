@@ -1,12 +1,16 @@
 "use client";
+
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, { useEffect, useState } from "react";
+import { createClient } from '@supabase/supabase-js'
 
-//const supabase = createClientComponentClient();
+const supabaseUrl = 'https://mhtfantpionbmgbauvsd.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odGZhbnRwaW9uYm1nYmF1dnNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQyMjA5MjEsImV4cCI6MjAyOTc5NjkyMX0.-5-WAdw_EqcgNjar-nm5aXhlM27JMLM5Xgng-TSvCgA'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 const ViewCounter = ({ slug, noCount = false, showCount = true }) => {
   const [views, setViews] = useState(0);
-/*
+
   useEffect(() => {
     const incrementView = async () => {
       try {
@@ -29,8 +33,8 @@ const ViewCounter = ({ slug, noCount = false, showCount = true }) => {
     if(!noCount){
         incrementView();
     }
-  }, [slug, noCount]);*/
-/*
+  }, [slug, noCount]);
+
   useEffect(() => {
     const getViews = async () => {
       try {
@@ -56,10 +60,10 @@ const ViewCounter = ({ slug, noCount = false, showCount = true }) => {
     };
 
         getViews();
-  }, [slug]);*/
+  }, [slug]);
 
   if (showCount) {
-    return <div> views</div>;
+    return <div>{views} views</div>;
   } else {
     return null;
   }
