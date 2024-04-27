@@ -13,7 +13,7 @@ function isInViewport(element) {
   return rect.top < h && rect.left < w && rect.bottom > 0 && rect.right > 0;
 }
 
-export function createDemo(canvas, modelName) {
+export function createDemo(canvas, modelName, W, H) {
     if (!canvas) return;
     /*
     const root = document.getElementById(divId);
@@ -21,7 +21,6 @@ export function createDemo(canvas, modelName) {
     const $ = q=>root.querySelector(q);
     const $$ = q=>root.querySelectorAll(q);
  	 */
-    const W=256, H=256;
     let demo;
     const modelDir = 'webgl_models8';
     let target = '🦎';
@@ -211,13 +210,13 @@ export function createDemo(canvas, modelName) {
     }
 }
 
-const LottieAnimation = ({ modelName }) => {
+const LottieAnimation = ({ modelName, width, height }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
         // When the component mounts, and the ref is attached to the canvas, initialize the demo
         if (canvasRef.current) {
-            createDemo(canvasRef.current, modelName);
+            createDemo(canvasRef.current, modelName, parseInt(width), parseInt(height));
         }
 
         // Cleanup function to handle component unmounting
