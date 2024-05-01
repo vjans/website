@@ -1,9 +1,9 @@
 // please update required information
 const siteMetadata = {
-    title: 'Next.js Blog With Tailwind CSS and Contentlayer',
+    title: 'Victor Jans - AI Enthusiast & Artful Coder',
     author: 'vjans',
     headerTitle: 'Victor Jans Blog',
-    description: 'A blog created with Next.js, Tailwind.css and contentlayer.',
+    description: 'Explore the intersection of AI and creativity through my projects, art and musings.',
     language: 'en-us',
     theme: 'system', // system, dark or light
     siteUrl: 'https://victor-jans.de', // your website URL
