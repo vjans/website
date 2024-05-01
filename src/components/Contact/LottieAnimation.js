@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
 import { createCA } from '@/src/utils/ca.js';
@@ -212,24 +212,38 @@ export function createDemo(canvas, modelName, W, H) {
 
 const LottieAnimation = ({ modelName, width, height }) => {
     const canvasRef = useRef(null);
+    const [loaded, setLoaded] = useState(false); // State to track if the animation has been loaded
 
     useEffect(() => {
-        // When the component mounts, and the ref is attached to the canvas, initialize the demo
+        const observer = new IntersectionObserver(
+            (entries) => {
+                // The callback will execute when the canvas comes into view
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !loaded) {
+                        // Ensure the demo is only created once when the canvas is visible and not already loaded
+                        createDemo(canvasRef.current, modelName, parseInt(width), parseInt(height));
+                        setLoaded(true); // Update the state to indicate the animation is loaded
+                        observer.unobserve(entry.target); // Stop observing the canvas once loaded
+                    }
+                });
+            },
+            { threshold: 0.1 } // Trigger when at least 10% of the canvas is visible
+        );
+
         if (canvasRef.current) {
-            createDemo(canvasRef.current, modelName, parseInt(width), parseInt(height));
+            observer.observe(canvasRef.current); // Start observing the canvas
         }
 
-        // Cleanup function to handle component unmounting
         return () => {
-            // Any necessary cleanup for your demo
+            observer.disconnect(); // Cleanup the observer on component unmount
         };
-    }, []); // Ensure this runs once on mount
+    }, [loaded]); // Depend on the 'loaded' state so the effect adjusts if it changes
 
     return (
-    <div className="flex items-center justify-center w-full h-full"> 
-        <canvas ref={canvasRef} className="border-2 border-black dark:border-white"></canvas>
-    </div>
-);
+        <div className="flex items-center justify-center w-full h-full">
+            <canvas ref={canvasRef} className="border-2 border-black dark:border-white"></canvas>
+        </div>
+    );
 };
 
 export default LottieAnimation;
