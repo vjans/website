@@ -210,11 +210,20 @@ export function createDemo(canvas, modelName, W, H) {
     }
 }
 
+// Utility function to determine if the device is mobile
+const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
 const LottieAnimation = ({ modelName, width, height }) => {
     const canvasRef = useRef(null);
     const [loaded, setLoaded] = useState(false); // State to track if the animation has been loaded
 
     useEffect(() => {
+        if (isMobile()) {
+            // If the device is mobile, do not load the animation
+            return;
+        }
         const observer = new IntersectionObserver(
             (entries) => {
                 // The callback will execute when the canvas comes into view
