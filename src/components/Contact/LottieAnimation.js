@@ -218,41 +218,51 @@ const isMobile = () => {
 const LottieAnimation = ({ modelName, width, height }) => {
     const canvasRef = useRef(null);
     const [loaded, setLoaded] = useState(false); // State to track if the animation has been loaded
+    const [showCanvas, setShowCanvas] = useState(false); // State to control the rendering of the canvas
 
     useEffect(() => {
-        if (isMobile()) {
-            // If the device is mobile, do not load the animation
+        // Delay the rendering of the canvas by 2 seconds
+        const timer = setTimeout(() => {
+            setShowCanvas(true);
+        }, 2000); // 2000 milliseconds delay
+
+        return () => clearTimeout(timer); // Cleanup the timer
+    }, []); // Empty dependency array ensures this runs once on mount
+
+    useEffect(() => {
+        if (!showCanvas || isMobile()) {
+            // If it's not time to show the canvas or if on mobile, do not load the animation
             return;
         }
+
         const observer = new IntersectionObserver(
             (entries) => {
-                // The callback will execute when the canvas comes into view
                 entries.forEach(entry => {
                     if (entry.isIntersecting && !loaded) {
-                        // Ensure the demo is only created once when the canvas is visible and not already loaded
                         createDemo(canvasRef.current, modelName, parseInt(width), parseInt(height));
-                        setLoaded(true); // Update the state to indicate the animation is loaded
-                        observer.unobserve(entry.target); // Stop observing the canvas once loaded
+                        setLoaded(true);
+                        observer.unobserve(entry.target);
                     }
                 });
             },
-            { threshold: 0.1 } // Trigger when at least 10% of the canvas is visible
+            { threshold: 0.1 }
         );
 
         if (canvasRef.current) {
-            observer.observe(canvasRef.current); // Start observing the canvas
+            observer.observe(canvasRef.current);
         }
 
         return () => {
-            observer.disconnect(); // Cleanup the observer on component unmount
+            observer.disconnect();
         };
-    }, [loaded]); // Depend on the 'loaded' state so the effect adjusts if it changes
+    }, [loaded, showCanvas]); // Depend on the 'loaded' and 'showCanvas' states
 
     return (
         <div className="flex items-center justify-center w-full h-full">
-            <canvas ref={canvasRef} className="border-2 border-black dark:border-white"></canvas>
+            {showCanvas && <canvas ref={canvasRef} className="border-2 border-black dark:border-white"></canvas>}
         </div>
     );
 };
 
 export default LottieAnimation;
+
