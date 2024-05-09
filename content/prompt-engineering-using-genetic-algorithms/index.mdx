@@ -2,11 +2,103 @@
 title: "Prompt engineering using genetic algorithms"
 description: Prompt engineering using genetic algorithms
 image: "../../public/blogs/gprompt.webp"
-publishedAt: "2023-01-01"
-updatedAt: "2023-01-01"
+publishedAt: "2024-05-01"
+updatedAt: "2024-05-01"
 author: "victor"
 isPublished: true
 tags: 
 - Machine-Learning/AI
 - LLM
+- Genetic-Algorithms
 ---
+
+Ever wondered if there’s a method to craft the perfect prompt for any given task using AI? This might seem like a lofty goal, but with the right tools, it's entirely achievable.
+
+In this article, I will showcase a prompt optimization strategy developed for a consulting client, who has generously permitted me to share the insights gained from our collaboration. The focus here is to not only outline the principles of this approach but also provide you with the building blocks needed to implement it yourself. This involves a specialized adaptation of Genetic Algorithms (GAs) tailored for use with Large Language Models (LLMs).
+
+To demonstrate the algorithm we will be using it to search for prompts that generate fast, working code, specifically sorting algorithms. If you want the full code for this project you can find it on [my github](https://github.com/vjans).
+
+## Background - Genetic Algorithms
+
+Genetic Algorithms (GAs) are a type of optimization and search technique based on the principles of genetics and natural selection. Originally developed by John Holland in the 1960s, GAs simulate the process of natural evolution, enabling solutions to complex problems to evolve over time through mechanisms reminiscent of biological evolution. These algorithms are particularly powerful in solving optimization problems where the solution space is vast and not well understood.
+
+### Core components of Genetic Algorithms
+
+- **Population**
+
+  GAs start with a group of randomly generated individuals, known as the population. Each individual in the population represents a potential solution to the problem at hand.
+
+- **Fitness Function**
+
+  This function evaluates how 'fit' or effective an individual solution is at solving the problem. The fitness score determines the likelihood of an individual being selected to reproduce in the next generation.
+
+
+- **Selection**
+
+  The process of selecting individuals for reproduction is based on their fitness. The fitter the individual, the higher its chances of being chosen. This mimics natural selection where stronger individuals are more likely to survive and reproduce.
+
+- **Crossover (Recombination)**
+
+   In this step, two individuals combine to produce one or more offspring by mixing their attributes. Crossover introduces new combinations of traits, potentially leading to better solutions.
+
+- **Mutation**
+
+  Occasionally, the offspring undergo mutations, where small, random changes are made to their traits. This process introduces variability into the population, helping explore new areas of the solution space and preventing the algorithm from becoming stuck in local optima.
+
+### Why are we using a Genetic Algorithm?
+
+Genetic algorithms excel in environments where problem differentiability is not guaranteed. Their ability to operate independently of a gradient makes them ideal for navigating complex, non-differentiable landscapes, such as those encountered in prompt optimization for language models. The non-differentiable nature of prompt effectiveness, which is qualitative and nuanced, makes GAs an excellent choice for iteratively refining prompts to improve performance in generating useful outputs from LLMs.
+
+## The algorithm
+
+### Initial prompting
+
+The starting point of our Genetic Algorithm is the initial set of prompts, which form our initial population. These prompts are crafted to instruct the GPT model to generate Python code for sorting algorithms. Each prompt specifies certain constraints and objectives to guide the model, such as avoiding predefined sorting functions and ensuring the code is self-contained within Python's native functionalities.
+
+>Write a python function to sort a list of integers using any sorting algorithm. I'd like you to output the code inside of triple ticks in the following format: Call the function gpt_sort(). The function only takes a Python list as input and outputs only the sorted Python list. Under no circumstances use 'sort()'. Never make use of Python libraries, only write in native Python.
+
+At the time of developing this algorithm there was no JSON mode for GPT models, which is why we included info about the formatting in the prompt. If you'd like to implement this algorithm I'd recommend using it since it provides more consistent results. [Openai has a helpful tutorial for using the JSON mode for its models](https://platform.openai.com/docs/guides/text-generation/json-mode).
+
+### Fitness Function: Evaluating Prompt Effectiveness
+
+The core of our approach lies in the fitness function, which is used to evaluate the effectiveness of the code generated by each prompt. We employ the OpenAI API to execute the prompts and then run the resulting code to measure its performance. The fitness of a prompt is determined by several factors, including the speed of the sorting algorithm it generates and the correctness of the output. This assessment is crucial as it dictates which prompts are selected for reproduction.
+
+```
+def evaluate_fitness(code):
+    # Here we simulate running the sorting algorithm and measure execution time and correctness
+    try:
+        start_time = timeit.default_timer()
+        sorted_output = exec(code)
+        end_time = timeit.default_timer()
+        execution_time = end_time - start_time
+        correct = is_correct(sorted_output)
+        return (execution_time, correct)
+    except Exception as e:
+        return (float('inf'), False)  # Worst possible fitness for any error
+
+def is_correct(output):
+    # Dummy function to check if the list is sorted correctly
+    return output == sorted(output)
+```
+
+### Mutation: Evolving Prompts
+
+Mutation in our Genetic Algorithm is performed by subtly altering the text of the prompts to explore variations that might yield more effective or efficient code. This is where the true power of using GPT comes into play. We ask the model to modify a given prompt, enhancing or changing its phrasing or constraints to potentially improve the performance of the code it generates. For instance, we might tweak a prompt from using a simple bubble sort to exploring more complex algorithms like quicksort or mergesort, always within the bounds of specified criteria like execution speed and resource efficiency. Here is the mutation prompt:
+
+> Above is a prompt to generate a python function. I want you to improve upon this prompt. Your goal should be to generate a prompt that will reliably generate an output that is faster than the above prompt generates. The output should be given in the following format: 1. Critique 2. PROMPT: Make sure to write 'PROMPT:' before the prompt so that it can be parsed easily. Make sure that the prompt is the very last thing you output.
+
+### Selection Process: Choosing the Best Prompts
+
+After evaluating the fitness of all prompts in the population, we select the most promising ones based on their fitness scores. These selected prompts are then used to generate the next generation of prompts. This selection mimics natural selection where only the fittest individuals are chosen to reproduce. In our case, it ensures that only the prompts that tend to generate the most efficient sorting algorithms are carried forward.
+
+While mutation explores new possibilities by altering existing prompts, crossover involves combining elements of two or more successful prompts to create new ones. This could involve merging parts of their structure or content to create hybrid prompts that incorporate the strengths of each parent. This method increases the diversity of the prompt population and can lead to innovative solutions that were not present in the initial population.
+
+
+## Putting everything together
+
+### Training loop
+
+### Results
+
+## Conclusion
+
